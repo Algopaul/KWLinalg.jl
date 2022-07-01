@@ -46,7 +46,7 @@ for (getrf, dtype) in [(:dgetrf_, Float64), (:zgetrf_, ComplexF64)]
                 info,
             )
             chkargsok(info[])
-            return A, ipiv, info
+            return A, ipiv, info[]
         end
     end
 end
