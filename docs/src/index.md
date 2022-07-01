@@ -4,6 +4,8 @@ Collection of functions to perform linear algebra operations in-place.
 
 ## Non allocating updates LU decompositions
 
+We extend the function `LAPACK.getrf!` to provide a pivot-vector `ipiv` as second argument. In this way, `ipiv` can be preallocated and `LAPACK.getrf!(A, ipiv)` does not cause any allocations. This allows one to update LU decompositions in-place.
+
 For a matrix `A` the function `lu!(A)` still allocates workspaces.
 ```julia
 using LinearAlgebra
