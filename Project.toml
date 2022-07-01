@@ -3,6 +3,10 @@ uuid = "3123b30d-1c8b-4465-a616-3de951cb5b45"
 authors = ["Algopaul <72927083+Algopaul@users.noreply.github.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [compat]
 julia = "1.7"
 
