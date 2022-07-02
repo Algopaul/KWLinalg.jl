@@ -24,8 +24,8 @@ using Random
     end
 end
 
-function test_complex_svd_functor(m, n, fun, alg)
-    A = rand(MersenneTwister(0), ComplexF64, m, n)
+function test_svd_functor(m, n, fun, alg, ele)
+    A = rand(MersenneTwister(0), typeof(ele), m, n)
     AC = deepcopy(A)
     svd_functor = fun(m, n)
     U, S, V = svd_functor(A)
@@ -33,20 +33,27 @@ function test_complex_svd_functor(m, n, fun, alg)
     @test norm(U - U2) == 0.0
     @test norm(S - S2) == 0.0
     @test norm(V - V2) == 0.0
-    A = rand(MersenneTwister(0), ComplexF64, m, n)
+    A = rand(MersenneTwister(0), typeof(ele), m, n)
     svd_alloc = @allocated svd_functor(A)
     # Upon second call, no memory should be allocated.
     @test svd_alloc == 0
+    return nothing
 end
 
 @testset "Complex SVD" begin
     for n in [1, 10]
         for m in [1, 10]
-            for (fun, alg) in [
-                (complex_svd_divconquer!, LinearAlgebra.DivideAndConquer()),
-                (complex_svd_qr!, LinearAlgebra.QRIteration()),
+            for (fun, alg, dtype) in [
+                (svd_divconquer_cf64, LinearAlgebra.DivideAndConquer(), ComplexF64),
+                (svd_divconquer_cf32, LinearAlgebra.DivideAndConquer(), ComplexF32),
+                (svd_qr_cf64, LinearAlgebra.QRIteration(), ComplexF64),
+                (svd_qr_cf32, LinearAlgebra.QRIteration(), ComplexF32),
+                (svd_divconquer_f64, LinearAlgebra.DivideAndConquer(), Float64),
+                (svd_divconquer_f32, LinearAlgebra.DivideAndConquer(), Float32),
+                (svd_qr_f64, LinearAlgebra.QRIteration(), Float64),
+                (svd_qr_f32, LinearAlgebra.QRIteration(), Float32),
             ]
-                test_complex_svd_functor(n, m, fun, alg)
+                test_svd_functor(m, n, fun, alg, one(dtype))
             end
         end
     end
