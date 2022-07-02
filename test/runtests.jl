@@ -27,7 +27,7 @@ end
 function test_svd_functor(m, n, fun, alg, ele)
     A = rand(MersenneTwister(0), typeof(ele), m, n)
     AC = deepcopy(A)
-    svd_functor = fun(m, n)
+    svd_functor = fun(m, n, typeof(ele))
     U, S, V = svd_functor(A)
     U2, S2, V2 = svd!(AC, alg = alg)
     @test norm(U - U2) == 0.0
@@ -43,17 +43,21 @@ end
 @testset "Complex SVD" begin
     for n in [1, 10]
         for m in [1, 10]
-            for (fun, alg, dtype) in [
-                (svd_divconquer_cf64, LinearAlgebra.DivideAndConquer(), ComplexF64),
-                (svd_divconquer_cf32, LinearAlgebra.DivideAndConquer(), ComplexF32),
-                (svd_qr_cf64, LinearAlgebra.QRIteration(), ComplexF64),
-                (svd_qr_cf32, LinearAlgebra.QRIteration(), ComplexF32),
-                (svd_divconquer_f64, LinearAlgebra.DivideAndConquer(), Float64),
-                (svd_divconquer_f32, LinearAlgebra.DivideAndConquer(), Float32),
-                (svd_qr_f64, LinearAlgebra.QRIteration(), Float64),
-                (svd_qr_f32, LinearAlgebra.QRIteration(), Float32),
-            ]
-                test_svd_functor(m, n, fun, alg, one(dtype))
+            for dtype in [Float32, Float64, ComplexF32, ComplexF64]
+                test_svd_functor(
+                    m,
+                    n,
+                    svd_functor_divconquer,
+                    LinearAlgebra.DivideAndConquer(),
+                    one(dtype),
+                )
+                test_svd_functor(
+                    m,
+                    n,
+                    svd_functor_qr,
+                    LinearAlgebra.QRIteration(),
+                    one(dtype),
+                )
             end
         end
     end
