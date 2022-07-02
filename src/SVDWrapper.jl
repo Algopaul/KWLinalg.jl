@@ -280,13 +280,13 @@ include("./SVDFunctors.jl")
 
 
 
-export complex_svd_qr!,
+export svd_qr!,
     svd_divconquer!,
     svd_divconquer_cf64,
     svd_divconquer_cf32,
-    svd_qr_cf32,
-    svd_qr_cf64,
     svd_divconquer_f64,
     svd_divconquer_f32,
+    svd_qr_cf32,
+    svd_qr_cf64,
     svd_qr_f64,
     svd_qr_f32
