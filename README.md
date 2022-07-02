@@ -37,7 +37,39 @@ BenchmarkTools.Trial: 10000 samples with 9 evaluations.
   2.61 μs         Histogram: frequency by time        2.81 μs <
 
  Memory estimate: 0 bytes, allocs estimate: 0.
- ```
+```
+
+In contrast, using the `LinearAlgebra` function `svd!` as in
+```julia
+using LinearAlgebra
+using BenchmarkTools
+
+m, n = 5, 3
+dtype = Float64
+A = rand(dtype, m, n)
+AC = deepcopy(A)
+function copy_and_svd!(A, AC)
+    AC .= A
+    svd!(AC)
+    return nothing
+end
+@benchmark $copy_and_svd!($A, $AC)
+```
+leads to following result:
+```julia
+BenchmarkTools.Trial: 10000 samples with 8 evaluations.
+ Range (min … max):  3.101 μs … 96.520 μs  ┊ GC (min … max): 0.00% … 94.23%
+ Time  (median):     3.154 μs              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   3.297 μs ±  1.473 μs  ┊ GC (mean ± σ):  0.75% ±  1.64%
+
+  ▃▇█▇▅▃▁           ▁▁▁▁▁▂▃▂▂▂▂▃▃▂▁▂▂▂▁▁                     ▂
+  ███████▄▄▄▁▅▁▅▇▇▅▇████████████████████████▇▆▅▆▅▅▆▅▄▅▆▆▆▆▆▆ █
+  3.1 μs       Histogram: log(frequency) by time     4.14 μs <
+
+ Memory estimate: 2.45 KiB, allocs estimate: 6.
+```
+
+The time-difference is mostly due to the overhead of garbage collection. `KWLinalg` provides a benefit, when linear algebra operations are performed on dense matrices of the same size for potentially millions of times (e.g. within an optimization loop).
  
  ## Installation
  
