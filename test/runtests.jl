@@ -40,25 +40,62 @@ function test_svd_functor(m, n, fun, alg, ele)
     return nothing
 end
 
+function test_svd_functor(m, n, fun, alg, ele)
+    A = rand(MersenneTwister(0), typeof(ele), m, n)
+    AC = deepcopy(A)
+    svd_functor = fun(m, n, typeof(ele))
+    U, S, V = svd_functor(A)
+    U2, S2, V2 = svd!(AC, alg = alg)
+    @test norm(U - U2) == 0.0
+    @test norm(S - S2) == 0.0
+    @test norm(V - V2) == 0.0
+    A = rand(MersenneTwister(0), typeof(ele), m, n)
+    svd_alloc = @allocated svd_functor(A)
+    # Upon second call, no memory should be allocated.
+    @test svd_alloc == 0
+    return nothing
+end
+
 @testset "Complex SVD" begin
-    for n in [1, 10]
-        for m in [1, 10]
-            for dtype in [Float32, Float64, ComplexF32, ComplexF64]
-                test_svd_functor(
-                    m,
-                    n,
-                    svd_functor_divconquer,
-                    LinearAlgebra.DivideAndConquer(),
-                    one(dtype),
-                )
-                test_svd_functor(
-                    m,
-                    n,
-                    svd_functor_qr,
-                    LinearAlgebra.QRIteration(),
-                    one(dtype),
-                )
+    @testset "Functionaliy and Allocs" begin
+        for n in [1, 10]
+            for m in [1, 10]
+                for dtype in [Float32, Float64, ComplexF32, ComplexF64]
+                    test_svd_functor(
+                        m,
+                        n,
+                        svd_functor_divconquer,
+                        LinearAlgebra.DivideAndConquer(),
+                        one(dtype),
+                    )
+                    test_svd_functor(
+                        m,
+                        n,
+                        svd_functor_qr,
+                        LinearAlgebra.QRIteration(),
+                        one(dtype),
+                    )
+                end
             end
         end
+    end
+
+    @testset "Exceptions" begin
+        @test_throws ErrorException("unsupported dtype") svd_functor_divconquer(1, 1, Int)
+        @test_throws ErrorException("unsupported dtype") svd_functor_qr(1, 1, Int)
+        @test_throws ErrorException("JOBU must be a Cchar with value 'A' or 'S'") KWLinalg.get_uvt(
+            Cchar('B'),
+            Cchar('A'),
+            3,
+            3;
+            dtype = ComplexF64,
+        )
+        @test_throws ErrorException("JOBVT must be a Cchar with value 'A' or 'S'") KWLinalg.get_uvt(
+            Cchar('A'),
+            Cchar('B'),
+            3,
+            3;
+            dtype = ComplexF64,
+        )
     end
 end

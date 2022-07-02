@@ -264,7 +264,7 @@ function get_uvt(JOBU, JOBVT, M, N; dtype)
     elseif JOBU == Cchar('S')
         U = Matrix{dtype}(undef, M, min(M, N))
     else
-        error("JOBU must be 'A' or 'S'")
+        error("JOBU must be a Cchar with value 'A' or 'S'")
     end
     if JOBVT == Cchar('A')
         VT = Matrix{dtype}(undef, N, N)
