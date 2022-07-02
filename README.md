@@ -18,12 +18,12 @@ dtype = Float64
 A = rand(dtype, m, n)
 AC = deepcopy(A)
 f = svd_functor_divconquer(m, n, Float64)
-function svd_inplace(A, AC, f)
+function copy_and_svd_inplace!(A, AC, f)
     AC .= A
     f(AC)
     return nothing
 end
-@benchmark $svd_inplace($A, $AC, $f)
+@benchmark $copy_and_svd_inplace!($A, $AC, $f)
 ```
 leads to following result:
 ```julia
