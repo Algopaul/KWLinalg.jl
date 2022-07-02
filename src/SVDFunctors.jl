@@ -95,7 +95,7 @@ for (dtype, shorthand) in [(Float64, "f64"), (Float32, "f32")]
             VT = UVT[2],
             LDU = max(1, stride(U, 2)),
             LDVT = max(1, stride(VT, 2)),
-            LWORK = get_lword_gesdd_real(M, N, JOBZ),
+            LWORK = get_lwork_gesdd_real(M, N, JOBZ),
             WORK = Vector{$dtype}(undef, LWORK),
             IWORK = Vector{BlasInt}(undef, 8 * min(M, N)),
             INFO = 0,
@@ -128,7 +128,7 @@ for (dtype, shorthand) in [(Float64, "f64"), (Float32, "f32")]
             VT = UVT[2],
             LDU = max(1, stride(U, 2)),
             LDVT = max(1, stride(VT, 2)),
-            LWORK = 10 * max(1, 2 * min(M, N) + max(M, N)),
+            LWORK = get_lwork_gesvd_real(M, N),
             WORK = Vector{$dtype}(undef, LWORK),
             INFO = 0,
         )

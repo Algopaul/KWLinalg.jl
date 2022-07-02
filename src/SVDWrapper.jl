@@ -58,7 +58,7 @@ for (gesv, dtype) in [(:zgesvd_, ComplexF64), (:cgesvd_, ComplexF32)]
     end
 end
 
-function get_lword_gesvd_real(M, N)
+function get_lwork_gesvd_real(M, N)
     return max(1, 3 * min(M, N) + max(M, N), 5 * min(M, N))
 end
 
@@ -76,7 +76,7 @@ for (gesv, dtype) in [(:dgesvd_, Float64), (:sgesvd_, Float32)]
             LDU::BlasInt = max(1, stride(U, 2)),
             VT::AbstractMatrix{$dtype} = Matrix{$dtype}(undef, size(A, 2), size(A, 2)),
             LDVT::BlasInt = max(1, stride(VT, 2)),
-            LWORK::BlasInt = get_lword_gesvd_real(M, N),
+            LWORK::BlasInt = get_lwork_gesvd_real(M, N),
             WORK::Vector{$dtype} = Vector{$dtype}(undef, LWORK),
             INFO = 0,
         )
@@ -119,7 +119,7 @@ for (gesv, dtype) in [(:dgesvd_, Float64), (:sgesvd_, Float32)]
     end
 end
 
-function get_lword_gesdd_real(M, N, JOBZ)
+function get_lwork_gesdd_real(M, N, JOBZ)
     mx = max(M, N)
     mn = min(M, N)
     if JOBZ == Cchar('N')
@@ -146,7 +146,7 @@ for (gesd, dtype) in [(:dgesdd_, Float64), (:sgesdd_, Float32)]
             LDU::BlasInt = max(1, stride(U, 2)),
             VT::AbstractMatrix{$dtype} = Matrix{$dtype}(undef, size(A, 2), size(A, 2)),
             LDVT::BlasInt = max(1, stride(VT, 2)),
-            LWORK::BlasInt = get_lword_gesdd_real(M, N, JOBZ),
+            LWORK::BlasInt = get_lwork_gesdd_real(M, N, JOBZ),
             WORK::Vector{$dtype} = Vector{$dtype}(undef, LWORK),
             IWORK::Vector{BlasInt} = Vector{BlasInt}(undef, 8 * min(M, N)),
             INFO = 0,
