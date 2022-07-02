@@ -16,4 +16,3 @@ include("./GetrfWrapper.jl")
 include("./SVDWrapper.jl")
 
 end
-
