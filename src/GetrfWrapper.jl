@@ -1,11 +1,5 @@
 for (getrf, dtype) in [(:dgetrf_, Float64), (:zgetrf_, ComplexF64)]
     @eval begin
-        """
-            getrf!(A, ipiv) -> (A, ipiv, info)
-
-        Compute the LU factorization of a general M-by-N matrix `A`.
-        The pivot-vector `ipiv` can be provided to avoid an allocation
-        """
         function getrf!(A::AbstractMatrix{$dtype}, ipiv::Vector{BlasInt})
             require_one_based_indexing(A)
             chkstride1(A)
@@ -36,3 +30,12 @@ for (getrf, dtype) in [(:dgetrf_, Float64), (:zgetrf_, ComplexF64)]
         end
     end
 end
+
+"""
+    getrf!(A, ipiv) -> (A, ipiv, info)
+
+Compute the LU factorization of a general M-by-N matrix `A`.
+The pivot-vector `ipiv` can be provided to avoid an allocation.
+Included by package `KWLinalg`.
+"""
+function getrf! end
