@@ -24,12 +24,12 @@ using Random
     end
 end
 
-function test_svd_functor(m, n, fun, alg, ele)
+function test_svd_functor(m, n, fun, alg, ele, full=false)
     A = rand(MersenneTwister(0), typeof(ele), m, n)
     AC = deepcopy(A)
-    svd_functor = fun(m, n, typeof(ele))
+    svd_functor = fun(m, n, typeof(ele); full_description(fun, full)...)
     U, S, V = svd_functor(A)
-    U2, S2, V2 = svd!(AC, alg = alg)
+    U2, S2, V2 = svd!(AC, alg = alg, full = full)
     @test norm(U - U2) == 0.0
     @test norm(S - S2) == 0.0
     @test norm(V - V2) == 0.0
@@ -40,20 +40,22 @@ function test_svd_functor(m, n, fun, alg, ele)
     return nothing
 end
 
-function test_svd_functor(m, n, fun, alg, ele)
-    A = rand(MersenneTwister(0), typeof(ele), m, n)
-    AC = deepcopy(A)
-    svd_functor = fun(m, n, typeof(ele))
-    U, S, V = svd_functor(A)
-    U2, S2, V2 = svd!(AC, alg = alg)
-    @test norm(U - U2) == 0.0
-    @test norm(S - S2) == 0.0
-    @test norm(V - V2) == 0.0
-    A = rand(MersenneTwister(0), typeof(ele), m, n)
-    svd_alloc = @allocated svd_functor(A)
-    # Upon second call, no memory should be allocated.
-    @test svd_alloc == 0
-    return nothing
+function full_description(fun, full)
+    if fun == svd_functor_divconquer
+        if full == true
+            return (JOBZ=Cchar('A'),)
+        else
+            return (JOBZ=Cchar('S'),)
+        end
+    elseif fun == svd_functor_qr
+        if full == true
+            return (JOBU=Cchar('A'), JOBVT=Cchar('A'))
+        else
+            return (JOBU=Cchar('S'), JOBVT=Cchar('S'))
+        end
+    else
+        @error "Unknown function name"
+    end
 end
 
 @testset "Complex SVD" begin
@@ -61,20 +63,22 @@ end
         for n in [1, 10]
             for m in [1, 10]
                 for dtype in [Float32, Float64, ComplexF32, ComplexF64]
-                    test_svd_functor(
-                        m,
-                        n,
-                        svd_functor_divconquer,
-                        LinearAlgebra.DivideAndConquer(),
-                        one(dtype),
-                    )
-                    test_svd_functor(
-                        m,
-                        n,
-                        svd_functor_qr,
-                        LinearAlgebra.QRIteration(),
-                        one(dtype),
-                    )
+                    for full in [false, true]
+                        test_svd_functor(
+                            m,
+                            n,
+                            svd_functor_divconquer,
+                            LinearAlgebra.DivideAndConquer(),
+                            one(dtype),
+                        )
+                        test_svd_functor(
+                            m,
+                            n,
+                            svd_functor_qr,
+                            LinearAlgebra.QRIteration(),
+                            one(dtype),
+                        )
+                    end
                 end
             end
         end
@@ -98,4 +102,5 @@ end
             dtype = ComplexF64,
         )
     end
+
 end
