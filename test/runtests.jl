@@ -24,7 +24,7 @@ using Random
     end
 end
 
-function test_svd_functor(m, n, fun, alg, ele, full=false)
+function test_svd_functor(m, n, fun, alg, ele, full)
     A = rand(MersenneTwister(0), typeof(ele), m, n)
     AC = deepcopy(A)
     svd_functor = fun(m, n, typeof(ele); full_description(fun, full)...)
@@ -70,6 +70,7 @@ end
                             svd_functor_divconquer,
                             LinearAlgebra.DivideAndConquer(),
                             one(dtype),
+                            full
                         )
                         test_svd_functor(
                             m,
@@ -77,6 +78,7 @@ end
                             svd_functor_qr,
                             LinearAlgebra.QRIteration(),
                             one(dtype),
+                            full
                         )
                     end
                 end
