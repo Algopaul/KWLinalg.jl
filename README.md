@@ -1,8 +1,8 @@
 # KWLinalg
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://algopaul.github.io/KWLinalg/)
-[![Build status](https://github.com/Algopaul/KWLinalg/workflows/CI/badge.svg)](https://github.com/KWLinalg/actions?query=workflow%3ACI+branch%3Amain)
-[![Coverage Status](http://codecov.io/github/Algopaul/KWLinalg/coverage.svg?branch=main)](http://codecov.io/github/Algopaul/KWLinalg?branch=main)
+[![Build status](https://github.com/Algopaul/KWLinalg.jl/workflows/CI/badge.svg)](https://github.com/KWLinalg.jl/actions?query=workflow%3ACI+branch%3Amain)
+[![Coverage Status](http://codecov.io/github/Algopaul/KWLinalg.jl/coverage.svg?branch=main)](http://codecov.io/github/Algopaul/KWLinalg.jl?branch=main)
 
 We provide wrappers for linear algebra routines that allow to pre-allocate memory for repeated executions of the same operations. For convenience, we also provide functors, that contain the necessary memory and can be called with no further allocations.
 
