@@ -76,7 +76,7 @@ The time-difference is mostly due to the overhead of garbage collection. `KWLina
 `KWLinalg` can be installed via `Pkg`:
  ```julia
  using Pkg
- Pkg.add(url="https://github.com/Algopaul/KWLinalg.git")
+ Pkg.add(url="https://github.com/Algopaul/KWLinalg.jl.git")
  ```
  
 For a detailed description of the package and its functionality, we refer to the [documentation](https://algopaul.github.io/KWLinalg/).
