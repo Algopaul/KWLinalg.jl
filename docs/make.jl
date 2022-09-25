@@ -8,6 +8,6 @@ makedocs(
          ]
 )
 deploydocs(
-  repo = "github.com/Algopaul/KWLinalg.git",
+  repo = "github.com/Algopaul/KWLinalg.jl.git",
   versions = nothing
 )
