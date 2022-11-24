@@ -276,6 +276,24 @@ function get_uvt(JOBU, JOBVT, M, N; dtype)
     return U, VT
 end
 
+function get_uvt_view(JOBU, JOBVT, M, N, U, VT)
+    if JOBU == Cchar('A')
+        Uv = view(U, 1:M, 1:M)
+    elseif JOBU == Cchar('S')
+        Uv = view(U, 1:M, 1:min(M, N))
+    else
+        error("JOBU must be a Cchar with value 'A' or 'S'")
+    end
+    if JOBVT == Cchar('A')
+        VTv = view(VT, 1:N, 1:N)
+    elseif JOBVT == Cchar('S')
+        VTv = view(VT, 1:min(M, N), 1:N)
+    else
+        error("JOBVT must be a Cchar with value 'A' or 'S'")
+    end
+    return Uv, VTv
+end
+
 include("./SVDFunctors.jl")
 
 

@@ -100,20 +100,27 @@ for (dtype, shorthand) in [(Float64, "f64"), (Float32, "f32")]
             IWORK = Vector{BlasInt}(undef, 8 * min(M, N)),
             INFO = 0,
         )
-            return A -> svd_divconquer!(
-                A;
-                JOBZ,
-                LDA,
-                S,
-                U,
-                LDU,
-                VT,
-                LDVT,
-                LWORK,
-                WORK,
-                IWORK,
-                INFO,
-            )
+            function f(A)
+                MM, NN = size(A)
+                @assert MM <= M && NN <= N
+                Uv, VTv = get_uvt_view(JOBZ, JOBZ, MM, NN, U, VT)
+                Sv = view(S, 1:min(MM, NN))
+                svd_divconquer!(
+                    A;
+                    JOBZ,
+                    LDA=stride(A, 2),
+                    S=Sv,
+                    U=Uv,
+                    LDU=max(1, stride(Uv, 2)),
+                    VT=VTv,
+                    LDVT=max(1, stride(VTv, 2)),
+                    LWORK,
+                    WORK,
+                    IWORK,
+                    INFO,
+                )
+            end
+            return f
         end
 
         function $name_qr(
@@ -132,22 +139,29 @@ for (dtype, shorthand) in [(Float64, "f64"), (Float32, "f32")]
             WORK = Vector{$dtype}(undef, LWORK),
             INFO = 0,
         )
-            return A -> svd_qr!(
-                A;
-                JOBU,
-                JOBVT,
-                M,
-                N,
-                LDA,
-                S,
-                U,
-                LDU,
-                VT,
-                LDVT,
-                LWORK,
-                WORK,
-                INFO,
-            )
+            function f(A)
+                MM, NN = size(A)
+                @assert MM <= M && NN <= N
+                Uv, VTv = get_uvt_view(JOBU, JOBVT, MM, NN, U, VT)
+                Sv = view(S, 1:min(MM, NN))
+                svd_qr!(
+                    A;
+                    JOBU,
+                    JOBVT,
+                    M=MM,
+                    N=NN,
+                    LDA=stride(A, 2),
+                    S=Sv,
+                    U=Uv,
+                    LDU=max(1, stride(Uv, 2)),
+                    VT=VTv,
+                    LDVT=max(1, stride(VTv, 2)),
+                    LWORK,
+                    WORK,
+                    INFO,
+                )
+            end
+            return f
         end
 
     end

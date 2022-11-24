@@ -40,6 +40,22 @@ function test_svd_functor(m, n, fun, alg, ele, full)
     return nothing
 end
 
+function test_svd_with_smaller_matrix(dtype)
+    f1 = svd_functor_divconquer(10, 5, dtype)
+    f2 = svd_functor_qr(10, 5, dtype)
+    A = rand(MersenneTwister(0), dtype, 8, 4)
+    U1, S1, V1 = f1(deepcopy(A))
+    U2, S2, V2 = f2(deepcopy(A))
+    U1r, S1r, V1r = svd(A)
+    U2r, S2r, V2r = svd(A, alg=LinearAlgebra.QRIteration())
+    @test norm(U1 - U1r) == 0
+    @test norm(S1 - S1r) == 0
+    @test norm(V1 - V1r) == 0
+    @test norm(U2 - U2r) < 10*eps(dtype)
+    @test norm(S2 - S2r) < 10*eps(dtype)
+    @test norm(V2 - V2r) < 10*eps(dtype)
+end
+
 function full_description(fun, full)
     if fun == svd_functor_divconquer
         if full == true
@@ -81,6 +97,9 @@ end
                             full
                         )
                     end
+                end
+                for dtype in [Float32, Float64]
+                    test_svd_with_smaller_matrix(dtype)
                 end
             end
         end
